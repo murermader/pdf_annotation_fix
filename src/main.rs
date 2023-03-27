@@ -20,12 +20,10 @@ struct Opt {
 fn main() -> Result<()> {
     let opt = Opt::from_args();
 
-    let recovered_annots = pdf_fixing_lib::fix_pdf_annotations(
+    pdf_fixing_lib::fix_pdf_annotations(
         opt.input.clone(),
         if opt.output.is_none() { opt.input.clone() } else { opt.output.unwrap() },
     )
     .context("unable to fix annoations")?;
-
-    println!("recovered {} annotations", recovered_annots);
     Ok(())
 }

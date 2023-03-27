@@ -63,14 +63,14 @@ pub fn fix_pdf_annotations(input: PathBuf, output: PathBuf) -> anyhow::Result<us
     let input_override = input.as_path() == output.as_path();
 
     if recovered_annotations == 0 {
-        println!("could not remove any annotaions.");
+        println!("No annotations recovered for [{}]", input.display());
         return Ok(recovered_annotations)
     }
 
     if input_override {
-        println!("override file [{}]", input.display())
+        println!("Removing {} annotations. Override file [{}]", recovered_annotations, input.display())
     } else {
-        println!("create file [{}]", output.display())
+        println!("Removing {} annotations. Create new file [{}]", recovered_annotations, input.display())
     }
 
     let mut output_options = OpenOptions::new()

@@ -1,3 +1,9 @@
+**Changes for this fork:**
+
+- removed web app
+- output path is now optional. input path will be overriden, if no output path is specified
+- slightly changed output
+
 # PDF Annotation Fixer
 
 macOS Preview sometimes 'forgets' about annotations that were added to a PDF file.

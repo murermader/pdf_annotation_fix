@@ -1,5 +1,3 @@
-use std::fs::{File, OpenOptions};
-
 use anyhow::{Context, Result};
 use std::path::PathBuf;
 use structopt::StructOpt;
@@ -16,19 +14,15 @@ struct Opt {
 
     /// Output file, stdout if not present
     #[structopt(parse(from_os_str))]
-    output: PathBuf,
+    output: Option<PathBuf>,
 }
 
 fn main() -> Result<()> {
     let opt = Opt::from_args();
 
     let recovered_annots = pdf_fixing_lib::fix_pdf_annotations(
-        File::open(opt.input).context("unable to open input pdf")?,
-        OpenOptions::new()
-            .create_new(true)
-            .write(true)
-            .open(opt.output)
-            .context("unable to open output file. does it already exist?")?,
+        opt.input.clone(),
+        if opt.output.is_none() { opt.input.clone() } else { opt.output.unwrap() },
     )
     .context("unable to fix annoations")?;
 

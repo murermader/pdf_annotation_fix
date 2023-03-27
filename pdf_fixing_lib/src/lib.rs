@@ -1,14 +1,16 @@
 use std::{
     collections::HashSet,
-    io::{Read, Write},
-    iter::once,
+    iter::once, path::PathBuf, fs::{OpenOptions, File},
 };
 
 use anyhow::{bail, Context};
 use lopdf::{Document, Object};
 
-pub fn fix_pdf_annotations(input: impl Read, mut output: impl Write) -> anyhow::Result<usize> {
-    let mut doc = Document::load_from(input).context("unable to parse pdf document")?;
+pub fn fix_pdf_annotations(input: PathBuf, output: PathBuf) -> anyhow::Result<usize> {
+    let mut doc = Document::load_from(
+        File::open(input.clone()).context("unable to open input pdf")?
+    ).context("unable to parse pdf document")?;
+
     let pages = doc.get_pages();
     let reference_objects = doc
         .objects
@@ -57,7 +59,28 @@ pub fn fix_pdf_annotations(input: impl Read, mut output: impl Write) -> anyhow::
             }
         }
     }
-    doc.save_to(&mut output)
+
+    let input_override = input.as_path() == output.as_path();
+
+    if recovered_annotations == 0 {
+        println!("could not remove any annotaions.");
+        return Ok(recovered_annotations)
+    }
+
+    if input_override {
+        println!("override file [{}]", input.display())
+    } else {
+        println!("create file [{}]", output.display())
+    }
+
+    let mut output_options = OpenOptions::new()
+            .create_new(!input_override)
+            .write(true)
+            .truncate(input_override)
+            .open(output)
+            .context("unable to open output file. does it already exist?")?;
+   
+    doc.save_to(&mut output_options)
         .context("unable to save pdf document")?;
     Ok(recovered_annotations)
 }

@@ -11,8 +11,6 @@ structopt = { version = "0.3", default-features = false }
 anyhow = "1.0"
 pdf_fixing_lib = {path="pdf_fixing_lib"}
 
-[workspace]
-members = ["web-app", "pdf_fixing_lib"]
 
 [profile.release]
 # optimization over all codebase ( better optimization, slower build )
